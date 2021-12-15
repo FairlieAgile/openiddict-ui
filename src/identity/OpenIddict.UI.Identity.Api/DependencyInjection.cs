@@ -1,12 +1,14 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using tomware.OpenIddict.UI.Suite.Core;
+using Microsoft.AspNetCore.Authorization;
 using tomware.OpenIddict.UI.Suite.Api;
-using System.Collections.Generic;
 
 namespace tomware.OpenIddict.UI.Identity.Api
 {
+  [ExcludeFromCodeCoverage]
   public static class OpenIddictUIIdentityApiServicesExtensions
   {
     public static OpenIddictBuilder AddUIIdentityApis<TApplicationUser>(
@@ -19,6 +21,8 @@ namespace tomware.OpenIddict.UI.Identity.Api
       builder.AddRoutePrefix(options.RoutePrefix);
 
       builder.Services.AddApiServices<TApplicationUser>();
+
+      builder.Services.AddAuthorizationServices(options.Policy);
 
       return builder;
     }
@@ -45,22 +49,19 @@ namespace tomware.OpenIddict.UI.Identity.Api
       services.AddTransient<IRoleService, RoleService>();
       services.AddTransient<IClaimTypeApiService, ClaimTypeApiService>();
 
-      services.AddAuthorizationServices();
-
       return services;
     }
 
     private static IServiceCollection AddAuthorizationServices(
-      this IServiceCollection services
+      this IServiceCollection services,
+      Action<AuthorizationPolicyBuilder> policy
     )
     {
       services.AddAuthorization(options =>
       {
         options.AddPolicy(
-          Policies.ADMIN_POLICY,
-          policy => policy
-            .RequireAuthenticatedUser()
-            .RequireRole(Roles.ADMINISTRATOR_ROLE)
+          Policies.OPENIDDICT_UI_IDENTITY_API_POLICY,
+          policy
         );
       });
 

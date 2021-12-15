@@ -93,7 +93,7 @@ namespace Server
         // Register the OpenIddict server components.
         .AddServer(options =>
         {
-          options.SetIssuer(new Uri("https://localhost:5000/"));
+          options.SetIssuer(new Uri("https://localhost:5001/"));
 
           // Enable the authorization, device, logout, token, userinfo and verification endpoints.
           options.SetAuthorizationEndpointUris("/connect/authorize")
@@ -140,6 +140,8 @@ namespace Server
                  .EnableTokenEndpointPassthrough()
                  .EnableUserinfoEndpointPassthrough();
           // .DisableTransportSecurityRequirement(); // During development, you can disable the HTTPS requirement.
+
+          // options.DisableAccessTokenEncryption();
         })
         // Register the OpenIddict validation components.
         .AddValidation(options =>
